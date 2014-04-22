@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Scanner;
 
 
 public class Sort {
@@ -21,18 +22,17 @@ public class Sort {
 	void getFile() {
 		try {
 			//read in dictionary file
-			File f = new File("src//dictionary.data");
+			File f = new File("dictionary.data");
+			Scanner s = new Scanner(f);
 			BufferedReader file = new BufferedReader(new FileReader(f));
 			//trim all the white space on the lines and get the number of lines
-			while(file.readLine() != null){
-				String line = file.readLine().trim().toString();
-				toCanonical(line);
-				word.add(toCanonical(line));
+			while(s.hasNextLine() && file.readLine() != null){
+				String line = toCanonical(s.nextLine());
+				word.add(line);
 				fileLines++;
+				System.out.println(line);
 			}
-
-
-			//file.close();
+			file.close();
 			//exception handling
 		} catch (FileNotFoundException e) {
 			System.out.println("You didn't access the dictionary.");
@@ -42,7 +42,8 @@ public class Sort {
 		}
 		//if there is a space on any of the lines, print out an error message and exit
 		for(int i = 0; i < fileLines; i++){
-			System.out.println(word.get(i));
+			//String sortedWord = toCanonical(word.get(i));
+			//System.out.println(sortedWord);
 		}
 		System.out.println(fileLines);
 	}
@@ -51,7 +52,7 @@ public class Sort {
 
 		@Override
 		public int compare(String word1, String word2) {	
-			System.out.println(word1.compareTo(word2));
+			//System.out.println(word1.compareTo(word2));
 			return word1.compareTo(word2);
 		}
 
