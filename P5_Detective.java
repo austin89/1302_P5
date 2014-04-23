@@ -1,10 +1,10 @@
-import java.util.Arrays;
-import java.util.Collections;
+import java.io.File;
+import java.util.Scanner;
 
 
 public class P5_Detective {
-	private static String word1 = "hoes";
-	private static String word2 = "hose";
+	private static String word1 = "monkey";
+	private static String word2 = "zebra";
 	
 	private static void setWord1(String word){
 		word1 = word;
@@ -27,27 +27,37 @@ public class P5_Detective {
 		}
 		return this.word2;
 	}
+	
+	void askAgain(){
+		Scanner in = new Scanner(System.in);
+		System.out.println("Would you like to check if 2 more words are anagrams? (y or n)");
+		
+		if(in.nextLine().equalsIgnoreCase("n")){
+			System.out.println("Enter -1 for both of your words: ");
+			do{
+				if(in.nextLine().equals("-1 -1")){
+						System.out.println("Goodbye!");
+						System.exit(0);
+				} else System.out.println("Both values must be -1 and separated by a space. Try again.");
+			}while(!(in.nextLine().equals("-1 -1")));
+		}
+		if(in.nextLine().equalsIgnoreCase("y")){
+			System.out.println("Enter 2 words separated by a space to compare them, then press ENTER twice to test them (FIX THIS!): ");			
+			this.word1 = in.next();		
+			this.word2 = in.next();
+			new Sort();
+		}
+	}
 
 	
 	public static void main(String[] args) {
-		args[0] = "src//dictionary.data";
-		args[1] = word1;
-		args[2] = word2;
-		Sort sort = new Sort();
+		String first = word1;
+		String second = word2;
 		
-		//if the words are not the same length then they definitely aren't anagrams
-		if(args[1].length() != args[2].length()){
-			System.out.println(args[1] + " and " + args[2] + "are not anagrams of each other.");
-		}
+		setWord1(first);
+		setWord2(second);
 		
-		sort.getFile();
-		
-		setWord1(args[1]);
-		setWord2(args[2]);
-		
-		sort.getSorted();
-		
-
+		new Sort();
 	}
 
 }
