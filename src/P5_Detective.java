@@ -1,4 +1,3 @@
-import java.io.File;
 import java.util.Scanner;
 
 
@@ -19,24 +18,37 @@ public class P5_Detective {
 		if(word1.equals("")){
 			System.out.println("Word 1 hasn't been set yet.");
 		}
-		return this.word1;
+		return P5_Detective.word1;
 	}
 
 	public String getWord2(){
 		if(word2.equals("")){
 			System.out.println("Word 2 hasn't been set yet.");
 		}
-		return this.word2;
+		return P5_Detective.word2;
+	}
+	
+	void error(){
+		System.out.println("Please enter yes or no. Try again.\n");
+		System.out.println("Would you like to check if 2 more words are anagrams? (yes or no)");
+		String response = in.nextLine();
+		if(response.equals("yes")){
+			askAgain();
+		}
+		if(response.equals("no")){
+			quit();
+		}
+		else error();
+		
 	}
 
 	void askAgain(){
 		play();
-		if(in.next().equals("n")){
+		if(in.hasNext("no")){
 			quit();
 		}
 		else {
-			System.out.println("Please enter y for yes or n for no. Try agaon.\n");
-			askAgain();
+			error();
 		}
 	}
 

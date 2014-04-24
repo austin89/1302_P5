@@ -1,16 +1,13 @@
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -19,25 +16,20 @@ import java.util.Scanner;
 
 public class Sort {
 	int fileLines = 0;
-	List<String> word = new ArrayList<String>();
-	List<String> origWord = new ArrayList<String>();
-	P5_Detective p5 = new P5_Detective();
-	String word1 = p5.getWord1(), word2 = p5.getWord2(), sorted1 = "", sorted2 = "";
+	private List<String> word = new ArrayList<String>();
+	private List<String> origWord = new ArrayList<String>();
+	private P5_Detective p5 = new P5_Detective();
+	private String word1 = p5.getWord1(), word2 = p5.getWord2(), sorted1 = "", sorted2 = "";
 	protected FileOutputStream logging;
 	protected PrintStream out = null;
-	FileWriter fw;
-	File f;
-	Scanner s;
-	BufferedReader file;
-	String line = "";
-	private boolean bool1 = true, bool2 = true;
+	private FileWriter fw;
+	private File f;
+	private Scanner s;
+	private BufferedReader file;
+	private String line = "", toAdd = "";
+	private boolean bool1 = false, bool2 = false;
 
 	public Sort(String w1, String w2){
-		//if the words are not the same length then they definitely aren't anagrams
-		if(w1.length() != w2.length()){
-			System.out.println(w1 + " and " + w2 + " are not anagrams of each other.");
-			p5.askAgain();
-		}
 		getFile(w1, w2);
 		getSorted(w1, w2);
 	}
@@ -55,26 +47,48 @@ public class Sort {
 				//System.out.println("Original: " + line);
 				wordSearch(w1, w2);									//check to see if the words are in the dictionary.data file
 				if(bool1 == false && bool2 == false){
-					System.out.println(w1 + "and" + w2 + " weren't found in the dictionary.");
-					p5.askAgain();
+					System.out.println(w1 + " and " + w2 + " weren't found in the dictionary.");
+					String s1 = w1;
+					String s2 = w2;
+					if(again("add") == true){
+						word.add(toCanonical(s1));
+						word.add(toCanonical(s2));
+						System.out.println("Added!\n");
+						fileLines++;
+					}
+					again("go");
 				}
 				else if(bool1 == false){								//check whether word1 was in the dictionary
 					System.out.println(w1 + " wasn't found in the dictionary.");
-					p5.askAgain();
+					if(again("add") == true){
+						word.add(toCanonical(w1));
+						System.out.println("Added!\n");
+					}
+					again("go");
 				}
 				else if(bool2 == false){								//check whether word1 was in the dictionary
-					System.out.println(w2 + " wasn't found in the dictionary.");
-					p5.askAgain();
+					System.out.println(w2 + " wasn't found in the dictionary.");					
+					if(again("add") == true){
+						word.add(toCanonical(w2));
+						System.out.println("Added!\n");
+					}
+					again("go");
 				}
 				else{
 					line = toCanonical(line).trim();					//if they are, sort the dictionary file
 					word.add(line);								//add the sorted words to an ArrayList
-					fw.write(line);								//and write them to a new sorted dictionary file
-					fw.write("\n");
-					fileLines++;
-					//System.out.println("Sorted: " + line);
 				}
+				fileLines++;
 			}
+			Collections.sort(word, new CanonicalComparator());
+			int num = 1;
+			while(num<fileLines){
+				String w = word.get(num);
+				fw.write(w);								//and write them to a new sorted dictionary file
+				fw.write("\n");
+				num++;
+			}
+			//System.out.println("Sorted: " + line);
 			fw.flush();
 			fw.close();
 			file.close();
@@ -89,6 +103,7 @@ public class Sort {
 	}
 
 
+	//check to see if both of the words are in the dictionary file
 	void wordSearch(String w1, String w2){
 		Scanner s1 = null, s2 = null;			//instantiate 2 new scanners for the two words
 		try {
@@ -125,41 +140,58 @@ public class Sort {
 		Arrays.sort(sorted);   
 		return new String(sorted);
 	}
+	
+	
+	private boolean again(String move){
+		Scanner in = new Scanner(System.in);
+		
+		if(move.equals("go")){
+			System.out.println("\nWould you like to check if 2 more words are anagrams? (yes or no)");
+		}
+		if(move.equals("add")){
+			System.out.println("Would you like to add it?");
+		}
+		String response = in.nextLine();
+		if(response.equalsIgnoreCase("no")){
+			if(move.equals("go")){
+					p5.quit();
+				}
+			if(move.equals("add")){
+				return false;
+			}
+			
+		}
+		if(response.equalsIgnoreCase("yes")){
+			if(move.equals("go")){
+				p5.askAgain();
+			}
+			if(move.equals("add")){
+				return true;
+			}
+			
+			
+		}
+		else p5.error();
+		
+		return false;
+	}
 
 
 	void getSorted(String w1, String w2){
-		Scanner in = new Scanner(System.in);
-		int round = 1;
+		
 		sorted1 = toCanonical(w1);
 		//System.out.println("Sorted Word 1: " + sorted1);
 		sorted2 = toCanonical(w2);
 		//System.out.println("Sorted Word 2: " + sorted2);
-		word.add(sorted1);
-		word.add(sorted2);
-		Collections.sort(word, new CanonicalComparator());
+
 		Collections.sort(word);
 		if(sorted1.equals(sorted2)){
-			System.out.println(w1 + " and " + w2 + " are anagrams of each other.");
-			if(round == 1){
-				System.out.println("Would you like to check if 2 more words are anagrams? (y or n)");
-
-				if(in.nextLine().equalsIgnoreCase("n")){
-					p5.quit();
-				}
-				else p5.askAgain();
-			}
+			System.out.println(w1 + " and " + w2 + " are anagrams of each other.\n");
+			again("go");
 		}
 		else{
-			System.out.println(w1 + " and " + w2 + " are not anagrams of each other.");
-			if(round == 1){
-				System.out.println("Would you like to check if 2 more words are anagrams? (y or n)");
-
-				if(in.nextLine().equalsIgnoreCase("n")){
-					p5.quit();
-				}
-				else p5.askAgain();
-				round++;
-			}
+			System.out.println(w1 + " and " + w2 + " are not anagrams of each other.\n");
+			again("go");
 		}
 	}
 }
