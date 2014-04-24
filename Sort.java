@@ -19,14 +19,13 @@ public class Sort {
 	private List<String> word = new ArrayList<String>();
 	private List<String> origWord = new ArrayList<String>();
 	private P5_Detective p5 = new P5_Detective();
-	private String word1 = p5.getWord1(), word2 = p5.getWord2(), sorted1 = "", sorted2 = "";
+	private String sorted1 = "", sorted2 = "";
 	protected FileOutputStream logging;
 	protected PrintStream out = null;
-	private FileWriter fw;
 	private File f;
 	private Scanner s;
 	private BufferedReader file;
-	private String line = "", toAdd = "";
+	private String line = "";
 	private boolean bool1 = false, bool2 = false;
 
 	public Sort(String w1, String w2){
@@ -40,7 +39,7 @@ public class Sort {
 			f = new File("dictionary.data");					//read in dictionary file
 			s = new Scanner(f);
 			file = new BufferedReader(new FileReader(f));		
-			fw = new FileWriter("sorted-output.txt");			//create new file for the canonically sorted dictionary		
+			FileWriter fw = new FileWriter("sorted-output.txt");			//create new file for the canonically sorted dictionary
 			while(s.hasNextLine() && file.readLine() != null){	//trim all the white space on the lines and get the number of lines
 				line = s.nextLine().trim();								
 				origWord.add(line);								//add all unsorted words to an ArrayList
@@ -48,11 +47,13 @@ public class Sort {
 				wordSearch(w1, w2);									//check to see if the words are in the dictionary.data file
 				if(bool1 == false && bool2 == false){
 					System.out.println(w1 + " and " + w2 + " weren't found in the dictionary.");
-					String s1 = w1;
-					String s2 = w2;
 					if(again("add") == true){
-						word.add(toCanonical(s1));
-						word.add(toCanonical(s2));
+						String s1 = toCanonical(w1);
+						String s2 = toCanonical(w2);
+						word.add(s1);
+						word.add(s2);
+						fw.write(s1);
+						fw.write(s2);
 						System.out.println("Added!\n");
 						fileLines++;
 					}
@@ -61,7 +62,10 @@ public class Sort {
 				else if(bool1 == false){								//check whether word1 was in the dictionary
 					System.out.println(w1 + " wasn't found in the dictionary.");
 					if(again("add") == true){
-						word.add(toCanonical(w1));
+						String s1 = toCanonical(w1);
+						word.add(s1);
+						fw.write(s1);
+						
 						System.out.println("Added!\n");
 					}
 					again("go");
@@ -69,7 +73,9 @@ public class Sort {
 				else if(bool2 == false){								//check whether word1 was in the dictionary
 					System.out.println(w2 + " wasn't found in the dictionary.");					
 					if(again("add") == true){
-						word.add(toCanonical(w2));
+						String s2 = toCanonical(w2);
+						word.add(s2);
+						fw.write(s2);
 						System.out.println("Added!\n");
 					}
 					again("go");
@@ -81,13 +87,12 @@ public class Sort {
 				fileLines++;
 			}
 			Collections.sort(word, new CanonicalComparator());
-			int num = 1;
-			while(num<fileLines){
-				String w = word.get(num);
-				fw.write(w);								//and write them to a new sorted dictionary file
+			for(int i = 0; i<fileLines; i++){
+				String w = word.get(i).toString();
+				fw.write(w);
 				fw.write("\n");
-				num++;
 			}
+
 			//System.out.println("Sorted: " + line);
 			fw.flush();
 			fw.close();
@@ -152,7 +157,7 @@ public class Sort {
 			System.out.println("Would you like to add it?");
 		}
 		String response = in.nextLine();
-		if(response.equalsIgnoreCase("no")){
+		if(response.equalsIgnoreCase("no".trim())){
 			if(move.equals("go")){
 					p5.quit();
 				}
@@ -161,15 +166,13 @@ public class Sort {
 			}
 			
 		}
-		if(response.equalsIgnoreCase("yes")){
+		if(response.equalsIgnoreCase("yes".trim())){
 			if(move.equals("go")){
 				p5.askAgain();
 			}
 			if(move.equals("add")){
 				return true;
 			}
-			
-			
 		}
 		else p5.error();
 		

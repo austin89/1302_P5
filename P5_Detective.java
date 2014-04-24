@@ -32,10 +32,10 @@ public class P5_Detective {
 		System.out.println("Please enter yes or no. Try again.\n");
 		System.out.println("Would you like to check if 2 more words are anagrams? (yes or no)");
 		String response = in.nextLine();
-		if(response.equals("yes")){
+		if(response.equals("yes".trim())){
 			askAgain();
 		}
-		if(response.equals("no")){
+		if(response.equals("no".trim())){
 			quit();
 		}
 		else error();
@@ -44,7 +44,7 @@ public class P5_Detective {
 
 	void askAgain(){
 		play();
-		if(in.hasNext("no")){
+		if(in.hasNext("no".trim())){
 			quit();
 		}
 		else {
@@ -62,7 +62,7 @@ public class P5_Detective {
 	void quit(){
 		System.out.println("Enter -1 for both of your words: ");
 		do{
-			if(in.nextLine().equals("-1 -1")){
+			if(in.nextLine().equals("-1 -1".trim())){
 				System.out.println("Goodbye!");
 				System.exit(0);
 			} else System.out.println("Both values must be -1 and separated by a space. Try again.");
